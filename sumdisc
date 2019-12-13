@@ -1,0 +1,23 @@
+#!/bin/bash
+shopt -s globstar
+
+declare -a MEDIAS
+for F in /run/media/$USER/*; do
+	MEDIAS+=$F
+done
+
+# allow selection later
+MEDIA=${MEDIAS[0]}
+
+DUMPDIR=${MEDIA##*/}
+
+mkdir "$DUMPDIR"
+cd "$DUMPDIR"
+DUMPDIR=$PWD
+
+(
+	cd "$MEDIA"
+	find . -type f -exec md5sum --binary {} + > "$DUMPDIR/MD5SUM"
+	find . -type f -exec sha512sum --binary {} + > "$DUMPDIR/SHA512SUM"
+	find . -type f -exec b2sum --binary {} + > "$DUMPDIR/B2SUM"
+)
